@@ -1,0 +1,76 @@
+default:
+  image: node:10
+
+variables:
+  USERNAME: compassjs-ci-user
+  BASEDOM: apollo.compass-stack.com
+
+.example:
+  before_script:
+    - cd examples/$EXAMPLE
+    - npm install
+    - |
+      echo "const config = { basedom: '$BASEDOM', jid: '$USERNAME@uc.$BASEDOM', password: '$CI_USER_PASSWORD' }; module.exports = config;" > config.js
+
+build:
+  script:
+    - npm install
+    - npm test
+    - NODE_ENV=production npm run build-ci
+  cache:
+    key:
+      files:
+        - package.json
+    paths:
+      - node_modules
+  artifacts:
+    name: build
+    paths:
+      - build
+
+simple-nodejs:
+  extends: .example
+  variables:
+    EXAMPLE: simple-nodejs
+  cache:
+    key:
+      files:
+        - examples/simple-nodejs/package.json
+    paths:
+      - examples/simple-nodejs/node_modules
+  script:
+    - (cd ../.. && npm link) && npm link compass.js
+
+simple-typescript:
+  extends: .example
+  variables:
+    EXAMPLE: simple-typescript
+  cache:
+    key:
+      files:
+        - examples/simple-typescript/package.json
+    paths:
+      - examples/simple-typescript/node_modules
+  script:
+    - npm run build
+  artifacts:
+    name: simple-typescript-build
+    paths:
+      - examples/simple-typescript/dist
+
+simple-webpack:
+  extends: .example
+  variables:
+    EXAMPLE: simple-webpack
+  cache:
+    key:
+      files:
+        - examples/simple-webpack/package.json
+    paths:
+      - examples/simple-webpack/node_modules
+  script:
+    - npm run build
+  artifacts:
+    name: simple-webpack-build
+    paths:
+      - examples/simple-webpack/dist
