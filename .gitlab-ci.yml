@@ -1,5 +1,7 @@
 default:
   image: node:10
+  tags:
+    - docker
 
 variables:
   USERNAME: compassjs-ci-user
@@ -25,6 +27,7 @@ build:
       - node_modules
   artifacts:
     name: build
+    expire_in: 7 days
     paths:
       - build
 
@@ -55,6 +58,7 @@ simple-typescript:
     - npm run build
   artifacts:
     name: simple-typescript-build
+    expire_in: 7 days
     paths:
       - examples/simple-typescript/dist
 
@@ -72,5 +76,6 @@ simple-webpack:
     - npm run build
   artifacts:
     name: simple-webpack-build
+    expire_in: 7 days
     paths:
       - examples/simple-webpack/dist
